@@ -28,7 +28,7 @@ export const chatRouter = createTRPCRouter({
 
       const completion = await openai.chat.completions.create(
         {
-          model: "openai/gpt-4o",
+          model: "google/gemini-2.5-flash",
           messages: [
             {
               role: "system",
