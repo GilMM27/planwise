@@ -27,3 +27,27 @@ You can check out the [create-t3-app GitHub repository](https://github.com/t3-os
 ## How do I deploy this?
 
 Follow our deployment guides for [Vercel](https://create.t3.gg/en/deployment/vercel), [Netlify](https://create.t3.gg/en/deployment/netlify) and [Docker](https://create.t3.gg/en/deployment/docker) for more information.
+
+## Local development checklist
+
+- Copy `.env.example` to `.env` and fill in the required secrets.
+	- `DATABASE_URL` should point to your local Postgres instance (the repo ships with `./start-database.sh`).
+	- `SERPAPI_API_KEY` unlocks Google Shopping price lookups through [SerpAPI](https://serpapi.com/). Leave it unset to work offline – the app will fall back to mocked pricing data.
+- Start the database container:
+	```bash
+	./start-database.sh
+	```
+- Apply Prisma migrations and regenerate the client whenever the schema changes:
+	```bash
+	npx prisma migrate dev
+	npx prisma generate
+	```
+
+## Conversation memory & budgeting
+
+The Planwise assistant now persists chats, event plans, and budget items:
+
+- **Conversation history** is stored in the new `Conversation` and `Message` tables, enabling multi-session planning.
+- **Event plans** live in `EventPlan` with related `BudgetItem` rows for venue, catering, and other expenses.
+- The chat UI lists all plans per user, tracks current budget items, and automatically incorporates stored context in each reply.
+- Pricing suggestions are fetched from Google (via SerpAPI) whenever budget-related questions appear, and saved as pending `BudgetItem` records for later review.
